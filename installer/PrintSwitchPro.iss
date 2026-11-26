@@ -1,6 +1,8 @@
 ; Inno Setup script — Windows 10/11 x64 only
+; Note: Without Authenticode signing, Windows 11 Smart App Control may block
+; Inno's temporary *.tmp (Error 4551). Prefer the portable ZIP in that case.
 #define MyAppName "PrintSwitchPro"
-#define MyAppVersion "3.0.0"
+#define MyAppVersion "3.0.1"
 #define MyAppPublisher "AniGerm"
 #define MyAppURL "https://github.com/AniGerm/PrintSwitchPro"
 #define MyAppExeName "PrintSwitchPro.exe"
@@ -14,7 +16,7 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}/releases
-DefaultDirName={autopf}\{#MyAppName}
+DefaultDirName={localappdata}\Programs\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 LicenseFile=..\LICENSE
@@ -32,6 +34,8 @@ MinVersion=10.0
 UninstallDisplayIcon={app}\{#MyAppExeName}
 CloseApplications=yes
 RestartApplications=no
+; Help a bit when users unblock the outer Setup.exe (inner temp still needs SAC off or signing)
+DisableReadyPage=no
 
 [Languages]
 Name: "german"; MessagesFile: "compiler:Languages\German.isl"
@@ -42,7 +46,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "autostart"; Description: "Mit Windows starten (Infobereich)"; GroupDescription: "Autostart:"; Flags: unchecked
 
 [Files]
-Source: "..\artifacts\publish\PrintSwitchPro.exe"; DestDir: "{app}"; Flags: ignoreversion
+; Multi-file self-contained publish (no single-file temp extract at runtime)
+Source: "..\artifacts\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

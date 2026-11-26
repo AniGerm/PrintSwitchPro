@@ -13,12 +13,6 @@
     <DebugType>embedded</DebugType>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(PublishSingleFile)' == 'true'">
-    <SelfContained>true</SelfContained>
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-  </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\PrintSwitchPro.Core\PrintSwitchPro.Core.csproj" />
   </ItemGroup>
