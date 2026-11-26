@@ -1,0 +1,91 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Verify tag matches Directory.Build.props version
+        shell: bash
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PROP=$(grep -oP '(?<=<Version>)[^<]+' Directory.Build.props | head -1)
+          if [ "$TAG" != "$PROP" ]; then
+            echo "::error::Tag v${TAG} stimmt nicht mit Version ${PROP} in Directory.Build.props überein."
+            exit 1
+          fi
+          echo "Version OK: ${PROP}"
+          # Keep Inno script version in sync for local builds; CI patches it.
+          sed -i "s/#define MyAppVersion \".*\"/#define MyAppVersion \"${TAG}\"/" installer/PrintSwitchPro.iss
+
+      - name: Test core
+        run: dotnet test tests/PrintSwitchPro.Core.Tests/PrintSwitchPro.Core.Tests.csproj -c Release
+
+      - name: Publish Windows app
+        run: >
+          dotnet publish src/PrintSwitchPro/PrintSwitchPro.csproj
+          -c Release
+          -r win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -o artifacts/publish
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup -y --no-progress
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" installer\PrintSwitchPro.iss
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-release
+          path: |
+            artifacts/PrintSwitchPro-Setup-*.exe
+            artifacts/publish/PrintSwitchPro.exe
+          if-no-files-found: error
+
+  publish-release:
+    needs: [release-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-release
+          path: dist-release
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          draft: false
+          generate_release_notes: true
+          body: |
+            ### Windows (x64)
+            Installer: `PrintSwitchPro-Setup-*.exe` — für Windows 10/11.
+
+            In der App: **Einstellungen → Nach Updates suchen → Herunterladen → Jetzt installieren**
+            (wie bei Inbox: GitHub Releases, Download mit Fortschritt, Installer starten).
+
+            Setup ist ggf. nicht code-signiert. Bei SmartScreen: Weitere Informationen → Trotzdem ausführen.
+          files: dist-release/PrintSwitchPro-Setup-*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

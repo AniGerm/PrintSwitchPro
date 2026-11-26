@@ -1,0 +1,30 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+
+  - repo: local
+    hooks:
+      - id: dotnet-test-core
+        name: dotnet test (Core)
+        entry: bash -c 'export PATH="$HOME/.dotnet:$PATH"; dotnet test tests/PrintSwitchPro.Core.Tests/PrintSwitchPro.Core.Tests.csproj -c Release --nologo'
+        language: system
+        pass_filenames: false
+        types: [file]
+        files: '\.(cs|csproj|props)$'
+
+      - id: dotnet-format-core
+        name: dotnet format (Core)
+        entry: bash -c 'export PATH="$HOME/.dotnet:$PATH"; dotnet format src/PrintSwitchPro.Core/PrintSwitchPro.Core.csproj --verify-no-changes --severity warn'
+        language: system
+        pass_filenames: false
+        types: [file]
+        files: '\.(cs|csproj|props)$'

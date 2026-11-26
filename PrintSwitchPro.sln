@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5D10671B-1D5D-4735-B6C3-A9411605CBD3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrintSwitchPro.Core", "src\PrintSwitchPro.Core\PrintSwitchPro.Core.csproj", "{ED5667A3-22FC-45D9-BB21-FBD7ED125510}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{79886834-A087-46AB-8F23-30D81DEBF442}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrintSwitchPro.Core.Tests", "tests\PrintSwitchPro.Core.Tests\PrintSwitchPro.Core.Tests.csproj", "{73D32904-6F32-4829-AE22-E63637658722}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrintSwitchPro", "src\PrintSwitchPro\PrintSwitchPro.csproj", "{83944A46-B40E-4A63-A94B-82F6F1B93164}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ED5667A3-22FC-45D9-BB21-FBD7ED125510}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED5667A3-22FC-45D9-BB21-FBD7ED125510}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED5667A3-22FC-45D9-BB21-FBD7ED125510}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED5667A3-22FC-45D9-BB21-FBD7ED125510}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73D32904-6F32-4829-AE22-E63637658722}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73D32904-6F32-4829-AE22-E63637658722}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73D32904-6F32-4829-AE22-E63637658722}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73D32904-6F32-4829-AE22-E63637658722}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83944A46-B40E-4A63-A94B-82F6F1B93164}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83944A46-B40E-4A63-A94B-82F6F1B93164}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83944A46-B40E-4A63-A94B-82F6F1B93164}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83944A46-B40E-4A63-A94B-82F6F1B93164}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{ED5667A3-22FC-45D9-BB21-FBD7ED125510} = {5D10671B-1D5D-4735-B6C3-A9411605CBD3}
+		{73D32904-6F32-4829-AE22-E63637658722} = {79886834-A087-46AB-8F23-30D81DEBF442}
+		{83944A46-B40E-4A63-A94B-82F6F1B93164} = {5D10671B-1D5D-4735-B6C3-A9411605CBD3}
+	EndGlobalSection
+EndGlobal

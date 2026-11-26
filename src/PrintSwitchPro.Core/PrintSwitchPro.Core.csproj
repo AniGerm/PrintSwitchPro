@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>PrintSwitchPro.Core</RootNamespace>
+    <Description>Core logic for PrintSwitchPro (printer mapping, settings, GitHub updates).</Description>
+  </PropertyGroup>
+</Project>
