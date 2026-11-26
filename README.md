@@ -1,23 +1,67 @@
-# Automatic Printer Switcher
-Automatically set default printers based on what program you have open
+# PrintSwitchPro
 
-![enter image description here](https://rawgit.com/faisalthaheem/automatic-printer-switcher/master/docs/aps-main-window.png)
+Automatischer Standarddrucker-Wechsel unter **Windows 10/11**, je nach Vordergrundprogramm.
 
-After the main program window is closed it is minimized to tray and can be accessed by clicking on the icon
+> Nur Windows. Kein Linux-/macOS-Build.
 
-![enter image description here](https://rawgit.com/faisalthaheem/automatic-printer-switcher/master/docs/minimized-to-tray.png)
+## Funktionen
 
-# Video Demo
+- Prozess → Drucker-Zuordnung
+- Infobereich (Tray), optional Autostart
+- Einstellungen auf Deutsch oder Englisch umschaltbar
+- **In-App-Updates** wie bei [Inbox](https://github.com/AniGerm/Inbox): GitHub Releases durchsuchen → Download mit Fortschritt → Installer starten
+- Self-contained .NET 8 (kein separates Runtime-Setup)
 
-[![APS Demo Video](https://img.youtube.com/vi/oNHsphTyp6A/0.jpg)](https://www.youtube.com/watch?v=oNHsphTyp6A)
+## Installation
 
-# Current Release
-Download from github [APS2.1.1.0-Setup.exe](https://github.com/faisalthaheem/automatic-printer-switcher/releases/download/v2.1.1.0/APS2.1.1.0-Setup.exe)
+Release-Installer von GitHub laden: `PrintSwitchPro-Setup-*.exe`
 
-# Building from source
-You will need
+Oder in PowerShell (nach dem ersten Release):
 
- 1. Visual Studio Community 2017
- 2. [InnoSetup](http://www.jrsoftware.org/isdl.php)
+```powershell
+# Beispiel — konkrete Assets stehen unter Releases
+Start-Process "https://github.com/AniGerm/PrintSwitchPro/releases/latest"
+```
 
-After compiling, copy the exe from "release" folder into the "src" folder of installer and build installation script to obtain the distributive installer.
+Bei SmartScreen (unsignierter Build): **Weitere Informationen** → **Trotzdem ausführen**.
+
+## Bauen (Windows)
+
+Voraussetzungen: [.NET 8 SDK](https://dotnet.microsoft.com/download), optional [Inno Setup 6](https://jrsoftware.org/isinfo.php)
+
+```powershell
+dotnet test tests/PrintSwitchPro.Core.Tests/PrintSwitchPro.Core.Tests.csproj -c Release
+
+dotnet publish src/PrintSwitchPro/PrintSwitchPro.csproj `
+  -c Release -r win-x64 --self-contained true `
+  -p:PublishSingleFile=true -o artifacts/publish
+
+& "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" installer\PrintSwitchPro.iss
+```
+
+## Entwicklung / Qualität
+
+```bash
+# Core-Tests laufen auch unter Linux (CI)
+dotnet test tests/PrintSwitchPro.Core.Tests/PrintSwitchPro.Core.Tests.csproj
+
+# Pre-Commit (optional)
+pip install pre-commit
+pre-commit install
+pre-commit run --all-files
+```
+
+## Daten
+
+Einstellungen: `%AppData%\PrintSwitchPro\settings.json`
+Updates: `%AppData%\PrintSwitchPro\updates\`
+
+Alte APS-`BinaryFormatter`-Dateien werden aus Sicherheitsgründen **nicht** importiert.
+
+## Sicherheit
+
+Siehe [docs/SICHERHEITSPRUEFUNG.md](docs/SICHERHEITSPRUEFUNG.md).
+
+## Lizenz
+
+Apache-2.0 (siehe [LICENSE](LICENSE)).

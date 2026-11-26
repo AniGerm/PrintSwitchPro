@@ -303,3 +303,10 @@ OpenCover/
 *.exe
 *.exe
 /Setup/src/PrinterSwitcher.exe
+
+# PrintSwitchPro
+artifacts/
+*.user
+.DS_Store
+.idea/
+.vs/

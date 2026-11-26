@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main, "cursor/**"]
+  pull_request:
+
+jobs:
+  test-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Restore
+        run: dotnet restore tests/PrintSwitchPro.Core.Tests/PrintSwitchPro.Core.Tests.csproj
+      - name: Test
+        run: dotnet test tests/PrintSwitchPro.Core.Tests/PrintSwitchPro.Core.Tests.csproj --configuration Release --no-restore
+      - name: Format check
+        run: dotnet format src/PrintSwitchPro.Core/PrintSwitchPro.Core.csproj --verify-no-changes --severity warn
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Build Windows app
+        run: >
+          dotnet publish src/PrintSwitchPro/PrintSwitchPro.csproj
+          -c Release
+          -r win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -o artifacts/publish
+      - name: Upload publish output
+        uses: actions/upload-artifact@v4
+        with:
+          name: printswitchpro-win-x64
+          path: artifacts/publish/PrintSwitchPro.exe
