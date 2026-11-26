@@ -58,9 +58,13 @@ Updates: `%AppData%\PrintSwitchPro\updates\`
 
 Alte APS-`BinaryFormatter`-Dateien werden aus Sicherheitsgründen **nicht** importiert.
 
-## Sicherheit
+## Sicherheit & Windows 11
 
-Siehe [docs/SICHERHEITSPRUEFUNG.md](docs/SICHERHEITSPRUEFUNG.md).
+Vollständiger Prüfbericht: [docs/SICHERHEITSPRUEFUNG.md](docs/SICHERHEITSPRUEFUNG.md)
+
+- **Malware:** In der Legacy- und der aktuellen Codebasis kein Virus-/Trojaner-Muster gefunden.
+- **Windows 11 (3.0):** Self-contained .NET 8 x64 — **kein** optionales .NET-Framework-3.5-Feature nötig.
+- **Legacy (.NET 3.5):** Auf Win11 nur mit aktiviertem .NET 3.5 lauffähig gewesen; diese Variante ist entfernt.
 
 ## Lizenz
 
