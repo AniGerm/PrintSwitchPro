@@ -28,20 +28,28 @@ jobs:
             exit 1
           fi
           echo "Version OK: ${PROP}"
-          # Keep Inno script version in sync for local builds; CI patches it.
           sed -i "s/#define MyAppVersion \".*\"/#define MyAppVersion \"${TAG}\"/" installer/PrintSwitchPro.iss
 
       - name: Test core
         run: dotnet test tests/PrintSwitchPro.Core.Tests/PrintSwitchPro.Core.Tests.csproj -c Release
 
+      # Multi-file self-contained: avoids .NET single-file extraction into %TEMP%
+      # (also friendlier under Smart App Control once installed).
       - name: Publish Windows app
         run: >
           dotnet publish src/PrintSwitchPro/PrintSwitchPro.csproj
           -c Release
           -r win-x64
           --self-contained true
-          -p:PublishSingleFile=true
+          -p:PublishSingleFile=false
           -o artifacts/publish
+
+      - name: Create portable ZIP
+        shell: pwsh
+        run: |
+          $tag = $env:GITHUB_REF_NAME.TrimStart('v')
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          Compress-Archive -Path artifacts/publish/* -DestinationPath "artifacts/PrintSwitchPro-Portable-$tag-win-x64.zip" -Force
 
       - name: Install Inno Setup
         shell: pwsh
@@ -50,7 +58,6 @@ jobs:
       - name: Build installer
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
           & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" installer\PrintSwitchPro.iss
 
       - name: Upload artifacts
@@ -59,7 +66,7 @@ jobs:
           name: windows-release
           path: |
             artifacts/PrintSwitchPro-Setup-*.exe
-            artifacts/publish/PrintSwitchPro.exe
+            artifacts/PrintSwitchPro-Portable-*-win-x64.zip
           if-no-files-found: error
 
   publish-release:
@@ -80,12 +87,21 @@ jobs:
           generate_release_notes: true
           body: |
             ### Windows (x64)
-            Installer: `PrintSwitchPro-Setup-*.exe` — für Windows 10/11.
 
-            In der App: **Einstellungen → Nach Updates suchen → Herunterladen → Jetzt installieren**
-            (wie bei Inbox: GitHub Releases, Download mit Fortschritt, Installer starten).
+            **Empfohlen bei Smart App Control / Fehler 4551:** portable ZIP nutzen (kein Inno-Temp):
+            - `PrintSwitchPro-Portable-*-win-x64.zip` → entpacken → `PrintSwitchPro.exe` starten
+            - Vorher ggf. `Unblock-File` auf die ZIP und die EXE
 
-            Setup ist ggf. nicht code-signiert. Bei SmartScreen: Weitere Informationen → Trotzdem ausführen.
-          files: dist-release/PrintSwitchPro-Setup-*.exe
+            Optional: `PrintSwitchPro-Setup-*.exe` (Inno). Ohne Codesigning kann **Smart App Control** das Setup mit **Fehler 4551** blockieren (temporäre `*.tmp`).
+
+            #### Fehler 4551 umgehen
+            1. Portable ZIP verwenden, **oder**
+            2. Windows-Sicherheit → App- & Browsersteuerung → **Smart App Control** → Aus (Neustart), Setup starten, danach wieder an wenn gewünscht
+            3. PowerShell: `Unblock-File .\PrintSwitchPro-Setup-*.exe`
+
+            Dauerhaft: Authenticode-Zertifikat + SignTool im Release.
+          files: |
+            dist-release/PrintSwitchPro-Setup-*.exe
+            dist-release/PrintSwitchPro-Portable-*-win-x64.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

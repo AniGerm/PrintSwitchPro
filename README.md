@@ -14,16 +14,28 @@ Automatischer Standarddrucker-Wechsel unter **Windows 10/11**, je nach Vordergru
 
 ## Installation
 
-Release-Installer von GitHub laden: `PrintSwitchPro-Setup-*.exe`
+Releases: https://github.com/AniGerm/PrintSwitchPro/releases
 
-Oder in PowerShell (nach dem ersten Release):
+### Empfohlen: Portable (ohne Installer)
+
+Bei **Smart App Control** / **Fehler 4551** den Inno-Installer meiden und die ZIP nutzen:
+
+1. `PrintSwitchPro-Portable-*-win-x64.zip` laden  
+2. Entpacken  
+3. Optional in PowerShell: `Unblock-File .\PrintSwitchPro.exe`  
+4. `PrintSwitchPro.exe` starten  
+
+Oder:
 
 ```powershell
-# Beispiel — konkrete Assets stehen unter Releases
-Start-Process "https://github.com/AniGerm/PrintSwitchPro/releases/latest"
+irm https://raw.githubusercontent.com/AniGerm/PrintSwitchPro/master/scripts/run-portable.ps1 | iex
 ```
 
-Bei SmartScreen (unsignierter Build): **Weitere Informationen** → **Trotzdem ausführen**.
+### Optional: Setup.exe
+
+`PrintSwitchPro-Setup-*.exe` — kann unter Windows 11 mit Smart App Control **Fehler 4551** auslösen (unsignierte Temp-Datei). Dann Portable nutzen oder Smart App Control vorübergehend ausschalten (Windows-Sicherheit → App- & Browsersteuerung).
+
+SmartScreen: **Weitere Informationen** → **Trotzdem ausführen**.
 
 ## Bauen (Windows)
 
@@ -34,8 +46,9 @@ dotnet test tests/PrintSwitchPro.Core.Tests/PrintSwitchPro.Core.Tests.csproj -c 
 
 dotnet publish src/PrintSwitchPro/PrintSwitchPro.csproj `
   -c Release -r win-x64 --self-contained true `
-  -p:PublishSingleFile=true -o artifacts/publish
+  -p:PublishSingleFile=false -o artifacts/publish
 
+Compress-Archive -Path artifacts\publish\* -DestinationPath artifacts\PrintSwitchPro-Portable-win-x64.zip
 & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" installer\PrintSwitchPro.iss
 ```
 
